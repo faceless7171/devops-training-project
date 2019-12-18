@@ -3,7 +3,7 @@ pipeline{
         label "linux"
     }
     stages{
-        stage("A"){
+        stage("Build front"){
             steps{
                 echo "========executing A========"
             }
