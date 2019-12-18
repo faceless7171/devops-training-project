@@ -5,7 +5,10 @@ pipeline{
     stages{
         stage("Build front"){
             agent {
-                docker { image 'node:13.3.0-alpine3.10' }
+                docker {
+                  label 'linux' 
+                  image 'node:13.3.0-alpine3.10' 
+                }
             }
             steps{
                 sh '''
