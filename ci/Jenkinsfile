@@ -12,7 +12,7 @@ pipeline{
             }
             steps{
                 sh '''
-                    cd frontend
+                    cd ${WORKSPACE}/frontend
                     npm i
                     npm build run
                 '''
