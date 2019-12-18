@@ -21,6 +21,7 @@ pipeline{
             post{
                 always{
                     echo "========always========"
+                    sh 'chown -R $(stat -c %u:%g .) ${WORKSPACE}'
                 }
                 success{
                     echo "========A executed successfully========"
@@ -56,7 +57,7 @@ pipeline{
     post{
         always{
             echo "========always========"
-            sh 'chown -R $(stat -c %u:%g .) ${WORKSPACE}*'
+            sh 'chown -R $(stat -c %u:%g .) ${WORKSPACE}'
         }
         success{
             echo "========pipeline executed successfully ========"
