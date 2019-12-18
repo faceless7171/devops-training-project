@@ -13,8 +13,8 @@ pipeline{
             steps{
                 sh '''
                     cd ${WORKSPACE}/frontend
-                    npm i
-                    npm build run
+                    sudo npm i
+                    sudo npm build run
                 '''
             }
             post{
