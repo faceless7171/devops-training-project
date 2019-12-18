@@ -8,7 +8,7 @@ pipeline{
                 docker {
                   label 'linux' 
                   image 'node:13.3.0-alpine3.10' 
-                  args '-u root:sudo'
+                  args '-u root'
                 }
             }
             steps{
