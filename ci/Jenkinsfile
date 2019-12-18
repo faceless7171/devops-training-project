@@ -1,11 +1,18 @@
 pipeline{
-    agent{
-        label "linux"
+    agent {
+      label 'linux'
     }
     stages{
         stage("Build front"){
+            agent {
+                docker { image 'node:13.3.0-alpine3.10' }
+            }
             steps{
-                echo "========executing A========"
+                sh '''
+                    cd frontend
+                    npm i
+                    npm build run
+                '''
             }
             post{
                 always{
@@ -17,6 +24,28 @@ pipeline{
                 failure{
                     echo "========A execution failed========"
                 }
+            }
+        }
+        stage("Pack docker image"){
+            steps{
+                withDockerRegistry([credentialsId: 'b2ad52d0-aab7-437d-8170-b8c4b4600821', url: 'https://nexusnsoroka.test.coherentprojects.net/repository/docker-dev/']) {
+                    sh '''
+                    docker build -t frontend --build-arg NGINX_CFG_PATH=ci/front-nginx --build-arg ARTIFACT_PATH=frontend/build ci/Front-dockerfile
+                    docker push frontend:${VERSION}
+                    '''
+                }
+            }
+            post{
+                always{
+                    echo "====++++always++++===="
+                }
+                success{
+                    echo "====++++Pack docker image executed succesfully++++===="
+                }
+                failure{
+                    echo "====++++Pack docker image execution failed++++===="
+                }
+        
             }
         }
     }

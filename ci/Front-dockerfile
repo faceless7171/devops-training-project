@@ -1,0 +1,11 @@
+FROM nginx:1.17.6
+
+ARG NGINX_CFG_PATH
+ARG ARTIFACT_PATH
+
+COPY ${ARTIFACT_PATH} /var/www/html/
+COPY ${NGINX_CFG_PATH} /etc/nginx/sites-available/default
+
+EXPOSE 80
+
+RUN nginx -s reload
