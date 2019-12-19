@@ -1,10 +1,16 @@
-FROM nginx:1.17.6
+FROM node:13.3.0-alpine3.10 AS builder
 
-ARG NGINX_CFG_PATH
-ARG ARTIFACT_PATH
+VOLUME /app
+WORKDIR /app
 
-COPY ${ARTIFACT_PATH} /var/www/html/
-COPY ${NGINX_CFG_PATH} /etc/nginx/sites-available/default
+RUN npm i \
+  && CI=true npm test \
+  && CI=true npm run build
+
+FROM nginx:1.17.6-alpine as dev
+
+COPY --from=builder --chown=nginx /app/build /var/www/html
+COPY --chown=nginx front-nginx /etc/nginx/sites-available/default
 
 EXPOSE 80
 

@@ -2,40 +2,38 @@ pipeline{
     agent {
       label 'linux'
     }
+    parameters {
+        string(defaultValue: '1.1.1', description: 'Specify build version', name: 'VERSION', trim: false)
+    }
     stages{
-        stage("Build front"){
-            agent {
-                docker {
-                  label 'linux' 
-                  image 'node:13.3.0-alpine3.10' 
-                  args '-u root'
-                }
-            }
-            steps{
-                sh '''
-                    cd ${WORKSPACE}/frontend
-                    npm i
-                    npm run build
-                '''
-            }
-            post{
-                always{
-                    echo "========always========"
-                    sh 'chown -R $(stat -c %u:%g .) ${WORKSPACE}'
-                }
-                success{
-                    echo "========A executed successfully========"
-                }
-                failure{
-                    echo "========A execution failed========"
+        stage('Update build version') {
+            steps {
+                script {
+                    def previosVersion
+                    def newVersion = "${params.VERSION}.0"
+                    // Find last not failed or aborted build
+                    def previosBuild = currentBuild.getPreviousBuild()
+                    while ( previosBuild && ['FAILURE', 'ABORTED'].contains(previosBuild.getCurrentResult()) ) {
+                        previosBuild = previosBuild.getPreviousBuild()
+                    }
+
+                    if ( previosBuild ) {
+                        previosVersion = previosBuild.displayName
+                        def (pMajor, pMinor, pPatch, pBuild) = previosVersion.tokenize('.').collect { it.isNumber() ? it.toInteger() : null }
+                        if ( "${params.VERSION}" == "${pMajor}.${pMinor}.${pPatch}") {
+                            newVersion = "${pMajor}.${pMinor}.${pPatch}.${pBuild + 1}"
+                        }
+                    }
+                    println("New version = ${newVersion} ; Previos version = ${previosVersion}")
+                    buildName(newVersion)
                 }
             }
         }
         stage("Pack docker image"){
             steps{
-              sh 'docker build -t frontend --build-arg NGINX_CFG_PATH=${WORKSPACE}/ci/front-nginx --build-arg ARTIFACT_PATH=${WORKSPACE}/frontend/build -f ci/Front-dockerfile .'
                 withDockerRegistry([credentialsId: 'b2ad52d0-aab7-437d-8170-b8c4b4600821', url: 'http://10.0.10.177:8083/repository/docker-dev']) {
                     sh '''
+                    docker build -t frontend -v ${WORKSPACE}/frontend:/app -f ci/Front-dockerfile .
                     docker push frontend:${VERSION}
                     '''
                 }
