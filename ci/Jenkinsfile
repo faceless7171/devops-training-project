@@ -16,6 +16,7 @@ pipeline{
                     } else {
                         version = VersionNumber(projectStartDate: '2000-01-01', versionNumberString: '${BUILDS_ALL_TIME}', versionPrefix: '${VERSION}.', worstResultForIncrement: 'SUCCESS')
                     }
+                    env.VERSION = version
                     buildName(version)
                 }
             }
