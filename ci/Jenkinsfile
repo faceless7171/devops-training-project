@@ -16,7 +16,9 @@ pipeline{
                     } else {
                         version = VersionNumber(projectStartDate: '2000-01-01', versionNumberString: '${BUILDS_ALL_TIME}', versionPrefix: '${VERSION}.', worstResultForIncrement: 'SUCCESS')
                     }
+                    echo env.BUILD_VERSION
                     env.BUILD_VERSION = version
+                    echo env.BUILD_VERSION
                     buildName(version)
                 }
             }
@@ -25,6 +27,7 @@ pipeline{
             steps{
                 withDockerRegistry([credentialsId: 'b2ad52d0-aab7-437d-8170-b8c4b4600821', url: 'http://10.0.10.177:8083']) {
                     sh '''
+                    echo 1.1.1.0
                     echo "${BUILD_VERSION}"
                     docker build -t 10.0.10.177:8083/frontend:${BUILD_VERSION} -f ci/Front-dockerfile ${WORKSPACE}
                     docker push 10.0.10.177:8083/frontend:${BUILD_VERSION}
