@@ -9,8 +9,8 @@ RUN npm i \
 
 FROM nginx:1.17.6-alpine as dev
 
-COPY --from=builder --chown=nginx /app/build /var/www/html
-COPY --chown=nginx front-nginx /etc/nginx/sites-available/default
+COPY --from=builder --chown=nginx /app/build /var/www/html/
+COPY --chown=nginx ci/front-nginx /etc/nginx/sites-available/default
 
 EXPOSE 80
 
