@@ -25,7 +25,7 @@ pipeline{
             steps{
                 withDockerRegistry([credentialsId: 'b2ad52d0-aab7-437d-8170-b8c4b4600821', url: 'http://10.0.10.177:8083']) {
                     sh '''
-                    echo "$VERSION"
+                    echo "${env.VERSION}"
                     docker build -t 10.0.10.177:8083/frontend:${VERSION} -f ci/Front-dockerfile ${WORKSPACE}
                     docker push 10.0.10.177:8083/frontend:${VERSION}
                     '''
