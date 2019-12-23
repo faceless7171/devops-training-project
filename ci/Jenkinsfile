@@ -11,7 +11,7 @@ pipeline{
             steps {
                 script {
                     def version
-                    if ( var.RESET_BUILD_VERSION == true ) {
+                    if ( env.RESET_BUILD_VERSION == true ) {
                         version = VersionNumber(projectStartDate: '2000-01-01', overrideBuildsAllTime: '0', versionNumberString: 'BUILDS_ALL_TIME', versionPrefix: "${VERSION}.", worstResultForIncrement: 'SUCCESS')
                     } else {
                         version = VersionNumber(projectStartDate: '2000-01-01', versionNumberString: 'BUILDS_ALL_TIME', versionPrefix: "${VERSION}.", worstResultForIncrement: 'SUCCESS')
