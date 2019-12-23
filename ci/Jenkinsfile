@@ -4,28 +4,19 @@ pipeline{
     }
     parameters {
         string(defaultValue: '1.1.1', description: 'Specify build version', name: 'VERSION', trim: false)
+        booleanParam(defaultValue: false, description: 'Set build version to 0', name: 'RESET_BUILD_VERSION')
     }
     stages{
         stage('Update build version') {
             steps {
                 script {
-                    def previosVersion
-                    def newVersion = "${params.VERSION}.0"
-                    // Find last not failed or aborted build
-                    def previosBuild = currentBuild.getPreviousBuild()
-                    while ( previosBuild && ['FAILURE', 'ABORTED'].contains(previosBuild.getCurrentResult()) ) {
-                        previosBuild = previosBuild.getPreviousBuild()
+                    def version
+                    if ( var.RESET_BUILD_VERSION == true ) {
+                        version = VersionNumber(projectStartDate: '2000-01-01', overrideBuildsAllTime: '0', versionNumberString: 'BUILDS_ALL_TIME', versionPrefix: "${VERSION}.", worstResultForIncrement: 'SUCCESS')
+                    } else {
+                        version = VersionNumber(projectStartDate: '2000-01-01', versionNumberString: 'BUILDS_ALL_TIME', versionPrefix: "${VERSION}.", worstResultForIncrement: 'SUCCESS')
                     }
-
-                    if ( previosBuild ) {
-                        previosVersion = previosBuild.displayName
-                        def (pMajor, pMinor, pPatch, pBuild) = previosVersion.tokenize('.').collect { it.isNumber() ? it.toInteger() : null }
-                        if ( "${params.VERSION}" == "${pMajor}.${pMinor}.${pPatch}") {
-                            newVersion = "${pMajor}.${pMinor}.${pPatch}.${pBuild + 1}"
-                        }
-                    }
-                    println("New version = ${newVersion} ; Previos version = ${previosVersion}")
-                    buildName(newVersion)
+                    buildName(version)
                 }
             }
         }
