@@ -12,9 +12,9 @@ pipeline{
                 script {
                     def version
                     if ( env.RESET_BUILD_VERSION == true ) {
-                        version = VersionNumber(projectStartDate: '2000-01-01', overrideBuildsAllTime: '0', versionNumberString: "${BUILDS_ALL_TIME}", versionPrefix: "${VERSION}.", worstResultForIncrement: 'SUCCESS')
+                        version = VersionNumber(projectStartDate: '2000-01-01', overrideBuildsAllTime: '0', versionNumberString: '${BUILDS_ALL_TIME}', versionPrefix: '${VERSION}.', worstResultForIncrement: 'SUCCESS')
                     } else {
-                        version = VersionNumber(projectStartDate: '2000-01-01', versionNumberString: "${BUILDS_ALL_TIME}", versionPrefix: "${VERSION}.", worstResultForIncrement: 'SUCCESS')
+                        version = VersionNumber(projectStartDate: '2000-01-01', versionNumberString: '${BUILDS_ALL_TIME}', versionPrefix: '${VERSION}.', worstResultForIncrement: 'SUCCESS')
                     }
                     buildName(version)
                 }
