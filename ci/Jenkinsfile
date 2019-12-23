@@ -23,11 +23,11 @@ pipeline{
         }
         stage("Pack docker image"){
             steps{
-                withDockerRegistry([credentialsId: 'b2ad52d0-aab7-437d-8170-b8c4b4600821', url: 'http://10.0.10.177:8083/repository/docker-dev']) {
+                withDockerRegistry([credentialsId: 'b2ad52d0-aab7-437d-8170-b8c4b4600821', url: 'http://10.0.10.177:8083']) {
                     sh '''
                     pwd
-                    docker build -t frontend -f ci/Front-dockerfile ${WORKSPACE}
-                    docker push frontend:${VERSION}
+                    docker build -t 10.0.10.177:8083/frontend -f ci/Front-dockerfile ${WORKSPACE}
+                    docker push 10.0.10.177:8083/frontend:${VERSION}
                     '''
                 }
             }
