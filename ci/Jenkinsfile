@@ -3,7 +3,7 @@ pipeline{
       label 'linux'
     }
     parameters {
-        string(defaultValue: '1.1.1', description: 'Specify build version', name: 'VERSION', trim: false)
+        string(defaultValue: '1.1.1', description: 'Specify build version in format MAJOR.MINOR.PATCH', name: 'VERSION', trim: false)
         booleanParam(defaultValue: false, description: 'Set build version to 0', name: 'RESET_BUILD_VERSION')
     }
     stages{
@@ -16,7 +16,7 @@ pipeline{
                     } else {
                         version = VersionNumber(projectStartDate: '2000-01-01', versionNumberString: '${VERSION}.${BUILDS_ALL_TIME}', worstResultForIncrement: 'SUCCESS')
                     }
-                    env.BUILD_VERSION = version
+                    env.VERSION = version
                     buildName(version)
                 }
             }
@@ -25,21 +25,26 @@ pipeline{
             steps{
                 withDockerRegistry([credentialsId: 'b2ad52d0-aab7-437d-8170-b8c4b4600821', url: 'http://10.0.10.177:8083']) {
                     sh '''
-                    echo "${BUILD_VERSION}"
-                    docker build -t 10.0.10.177:8083/frontend:${BUILD_VERSION} -f ci/Front-dockerfile ${WORKSPACE}
-                    docker push 10.0.10.177:8083/frontend:${BUILD_VERSION}
+                    docker build -t 10.0.10.177:8083/frontend:${VERSION} -f ci/Front-dockerfile ${WORKSPACE}
+                    docker push 10.0.10.177:8083/frontend:${VERSION}
                     '''
                 }
+            }
+        }
+        stage("Prepare and upload to S3"){
+            steps{
+                zip zipFile: 'ci/s3_folder.zip', dir: 'ci/s3_folder'
+                s3Upload consoleLogLevel: 'INFO', dontWaitForConcurrentBuildCompletion: false, entries: [[bucket: 'nsoroka-training-s3', excludedFile: '', flatten: false, gzipFiles: false, keepForever: false, managedArtifacts: false, noUploadOnFailure: false, selectedRegion: 'us-east-1', showDirectlyInBrowser: false, sourceFile: 'ci/s3_folder.zip', storageClass: 'STANDARD', uploadFromSlave: false, useServerSideEncryption: false]], pluginFailureResultConstraint: 'FAILURE', profileName: 'main', userMetadata: []
             }
             post{
                 always{
                     echo "====++++always++++===="
                 }
                 success{
-                    echo "====++++Pack docker image executed succesfully++++===="
+                    echo "====++++Prepare and Upload to S3 executed succesfully++++===="
                 }
                 failure{
-                    echo "====++++Pack docker image execution failed++++===="
+                    echo "====++++Prepare and Upload to S3 execution failed++++===="
                 }
         
             }
