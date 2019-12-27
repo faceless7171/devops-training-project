@@ -1,3 +1,4 @@
 #!/bin/bash
 
-echo "started!" > /home/st1
+docker login -u admin -p 12345678 http://10.0.10.177:8083
+docker run -d --rm --name DOCKER_NAME -p 80:80 DOCKER_IMAGE

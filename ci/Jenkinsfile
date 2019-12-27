@@ -21,7 +21,7 @@ pipeline{
                 }
             }
         }
-        stage("Pack docker image"){
+        stage("Pack frontend docker image"){
             steps{
                 withDockerRegistry([credentialsId: 'b2ad52d0-aab7-437d-8170-b8c4b4600821', url: 'http://10.0.10.177:8083']) {
                     sh '''
@@ -31,21 +31,13 @@ pipeline{
                 }
             }
         }
-        stage("Prepare and upload to S3"){
+        stage("Deploy frontend"){
             steps{
+                sh '''
+                sed -i 's/DOCKER_NAME/frontend/g' ci/s3_folder/scripts/start_app
+                sed -i 's/DOCKER_IMAGE/10.0.10.177:8083/frontend:${VERSION}' ci/s3_folder/scripts/start_app
+                '''
                 step([$class: 'AWSCodeDeployPublisher', applicationName: 'nsoroka-training-front', awsAccessKey: '', awsSecretKey: '', credentials: 'awsAccessKey', deploymentGroupAppspec: false, deploymentGroupName: 'nsoroka-training-front', deploymentMethod: 'deploy', excludes: '', iamRoleArn: '', includes: '**', pollingFreqSec: 15, pollingTimeoutSec: 300, proxyHost: '', proxyPort: 0, region: 'us-east-1', s3bucket: 'nsoroka-training-s3', s3prefix: 'frontend', subdirectory: 'ci/s3_folder', versionFileName: '', waitForCompletion: true])
-            }
-            post{
-                always{
-                    echo "====++++always++++===="
-                }
-                success{
-                    echo "====++++Prepare and Upload to S3 executed succesfully++++===="
-                }
-                failure{
-                    echo "====++++Prepare and Upload to S3 execution failed++++===="
-                }
-        
             }
         }
     }

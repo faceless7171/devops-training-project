@@ -1,3 +1,4 @@
 #!/bin/bash
 
-echo "stoped!" > /home/s1
+docker stop DOCKER_NAME
+docker image prune -af
