@@ -2,10 +2,6 @@ FROM gradle:6.0.1-jdk8 AS builder
 
 WORKDIR /home/gradle/project
 
-USER root
-
-RUN apk update
-
 ENV GRADLE_USER_HOME /home/gradle/project
 
 COPY backend /home/gradle/project
