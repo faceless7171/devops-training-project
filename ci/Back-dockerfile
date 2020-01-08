@@ -1,5 +1,7 @@
 FROM gradle:4.4.1-jdk8-alpine AS builder
 
+USER root
+
 WORKDIR /home/gradle/project
 
 COPY backend /home/gradle/project
