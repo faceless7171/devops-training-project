@@ -63,6 +63,7 @@ pipeline{
                         cp -r ci/s3_folder ci/s3_back
                         sed -i 's+DOCKER_NAME+backend+g' ci/s3_back/scripts/start_app ci/s3_back/scripts/stop_app
                         sed -i "s+DOCKER_IMAGE+10.0.10.177:8083/backend:${VERSION}+g" ci/s3_back/scripts/start_app
+                        sed -i "s+80:80+8080:8080+g" ci/s3_back/scripts/start_app
                         '''
                         step([$class: 'AWSCodeDeployPublisher', applicationName: 'nsoroka-training-front', awsAccessKey: '', awsSecretKey: '', credentials: 'awsAccessKey', deploymentGroupAppspec: false, deploymentGroupName: 'nsoroka-training-back', deploymentMethod: 'deploy', excludes: '', iamRoleArn: '', includes: '**', pollingFreqSec: 15, pollingTimeoutSec: 600, proxyHost: '', proxyPort: 0, region: 'us-east-1', s3bucket: 'nsoroka-training-s3', s3prefix: 'backend', subdirectory: 'ci/s3_back', versionFileName: '', waitForCompletion: true])
                     }
