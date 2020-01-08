@@ -2,7 +2,7 @@ FROM gradle:4.4.1-jdk8-alpine AS builder
 
 WORKDIR /home/gradle/project
 
-COPY --chown=gradle:gradle backend /home/gradle/project
+COPY backend /home/gradle/project
 
 RUN gradle build -x test 1>/dev/null
 
