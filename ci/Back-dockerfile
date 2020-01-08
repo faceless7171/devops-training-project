@@ -1,10 +1,10 @@
-FROM gradle:6.0.1-jdk8 AS builder
+FROM gradle:4.10.2-jdk8-alpine AS builder
 
 WORKDIR /home/gradle/project
 
 COPY backend /home/gradle/project
 
-RUN gradle build --no-daemon -x test 1>/dev/null
+RUN gradle build -x test 1>/dev/null
 
 
 FROM openjdk:8-jre-alpine
