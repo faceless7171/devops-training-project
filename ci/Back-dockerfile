@@ -2,14 +2,14 @@ FROM gradle:6.0.1-jdk8 AS builder
 
 WORKDIR /home/gradle/project
 
-ENV GRADLE_USER_HOME /home/gradle/project
-
 COPY backend /home/gradle/project
 
-RUN gradle build
+RUN gradle build --no-daemon -x test 1>/dev/null
 
 
 FROM openjdk:8-jre-alpine
+
+ENV DB_USERNAME="admin" DB_PASSWORD="admin12345" DB_URL="nsoroka-training-rds.cqnuqytrqlro.us-east-1.rds.amazonaws.com" DB_PORT="3306" DB_NAME="mydb"
 
 EXPOSE 8080
 
